@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>American Express Premier — Wellbeing Prototype</title>
+<style>
+  :root{
+    --bg:#F2F2F3;
+    --card:#FFFFFF;
+    --ink:#16181A;
+    --grey:#6E7378;
+    --grey2:#8A8F94;
+    --blue:#006FCF;
+    --blue-dark:#00558F;
+    --blue-soft:#EAF3FB;
+    --green:#1E8E3E;
+    --line:#E7E8EA;
+    --gold:#C9A24B;
+    --radius:14px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--font);
+    background:#3a3d42;
+    background:radial-gradient(circle at 50% 20%,#4a4e54,#2b2d31 70%);
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:24px 12px;color:var(--ink);
+  }
+  /* ---------- phone frame ---------- */
+  .phone{
+    width:390px;height:844px;background:var(--bg);
+    border-radius:46px;position:relative;overflow:hidden;
+    box-shadow:0 0 0 12px #0d0e10, 0 0 0 14px #26282c, 0 30px 70px rgba(0,0,0,.55);
+  }
+  .notch{
+    position:absolute;top:11px;left:50%;transform:translateX(-50%);
+    width:118px;height:33px;background:#0d0e10;border-radius:20px;z-index:60;
+  }
+  .statusbar{
+    position:absolute;top:0;left:0;right:0;height:52px;z-index:55;
+    display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 26px 8px;font-size:14px;font-weight:600;color:var(--ink);
+    pointer-events:none;
+  }
+  .statusbar .sig{display:flex;align-items:center;gap:6px;}
+  .statusbar svg{display:block;}
+  /* ---------- scroll area ---------- */
+  .viewport{position:absolute;top:52px;left:0;right:0;bottom:0;overflow:hidden;}
+  .screen{
+    position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    padding-bottom:96px;display:none;-webkit-overflow-scrolling:touch;
+  }
+  .screen.active{display:block;animation:fade .22s ease;}
+  .screen.tab{padding-bottom:96px;}
+  .screen.detail{padding-bottom:40px;background:var(--bg);}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .screen::-webkit-scrollbar{width:0;}
+
+  /* ---------- app top bar ---------- */
+  .appbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 18px 10px;position:relative;
+  }
+  .appbar .title{font-size:19px;font-weight:700;text-align:center;flex:1;}
+  .appbar .title small{display:block;font-size:11px;font-weight:500;color:var(--grey);margin-top:2px;}
+  .appbar .ic{width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--blue);}
+  .backbar{
+    display:flex;align-items:center;gap:6px;padding:8px 14px 6px;position:sticky;top:0;
+    background:var(--bg);z-index:20;
+  }
+  .backbar button{
+    background:none;border:none;color:var(--blue);font-family:var(--font);
+    font-size:16px;font-weight:600;display:flex;align-items:center;gap:3px;cursor:pointer;padding:6px 4px;
+  }
+  .backbar .bt-title{font-size:16px;font-weight:700;color:var(--ink);margin-left:auto;margin-right:auto;padding-right:38px;}
+
+  /* ---------- generic ---------- */
+  .wrap{padding:0 16px;}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .muted{color:var(--grey);}
+  .link{color:var(--blue);font-weight:600;cursor:pointer;}
+  .row{display:flex;align-items:center;justify-content:space-between;}
+  .divider{height:1px;background:var(--line);margin:0;}
+  .spacer{height:14px;}
+  .spacer-lg{height:22px;}
+  .center{text-align:center;}
+
+  /* ---------- card carousel ---------- */
+  .carousel{display:flex;gap:14px;overflow-x:auto;padding:14px 16px 6px;scroll-snap-type:x mandatory;}
+  .carousel::-webkit-scrollbar{display:none;}
+  .amexcard{
+    scroll-snap-align:center;flex:0 0 auto;width:300px;height:190px;border-radius:16px;
+    position:relative;overflow:hidden;color:#EDEFF2;cursor:pointer;
+    box-shadow:0 8px 22px rgba(0,0,0,.28);
+    background:
+      radial-gradient(120% 140% at 80% -10%, #4c5057 0%, rgba(76,80,87,0) 55%),
+      linear-gradient(135deg,#26282c 0%,#3a3d42 42%,#1c1e21 100%);
+  }
+  .amexcard.gold{
+    color:#3a2f13;
+    background:
+      radial-gradient(120% 140% at 80% -10%, #f6e6b4 0%, rgba(246,230,180,0) 55%),
+      linear-gradient(135deg,#caa64e 0%,#e8cf86 45%,#b48c34 100%);
+  }
+  .amexcard .guilloche{position:absolute;inset:0;opacity:.16;
+    background-image:repeating-radial-gradient(circle at 30% 40%,#fff 0 1px,transparent 1px 7px);}
+  .amexcard .cc-top{position:absolute;top:16px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start;}
+  .amexcard .cc-brand{font-size:11px;font-weight:800;letter-spacing:1.4px;line-height:1.15;}
+  .amexcard .cc-brand span{display:block;font-size:9px;font-weight:600;letter-spacing:3px;opacity:.8;}
+  .amexcard .cc-word{font-size:15px;font-weight:800;letter-spacing:3px;color:var(--gold);}
+  .amexcard.gold .cc-word{color:#3a2f13;}
+  .amexcard .emblem{position:absolute;top:50px;left:50%;transform:translateX(-50%);opacity:.9;}
+  .amexcard .cc-chip{position:absolute;left:22px;top:96px;width:34px;height:26px;border-radius:5px;
+    background:linear-gradient(135deg,#d9c27e,#b28f3a);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
+  .amexcard .cc-wave{position:absolute;left:64px;top:99px;opacity:.85;}
+  .amexcard .cc-name{position:absolute;left:22px;bottom:34px;font-size:13px;font-weight:700;letter-spacing:.6px;}
+  .amexcard .cc-since{position:absolute;left:22px;bottom:16px;font-size:9px;letter-spacing:1px;opacity:.85;}
+  .amexcard .cc-num{position:absolute;right:20px;bottom:16px;font-size:12px;font-weight:700;letter-spacing:1px;}
+
+  /* ---------- balance block ---------- */
+  .balance{margin:6px 16px 0;padding:20px;}
+  .balance h2{font-size:15px;color:var(--grey);font-weight:600;margin-bottom:4px;}
+  .balance .amt{font-size:34px;font-weight:800;letter-spacing:-.5px;}
+  .balance .line-item{display:flex;justify-content:space-between;font-size:15px;margin-top:14px;}
+  .balance .sub{font-size:13px;color:var(--grey);margin-top:2px;}
+  .balance .stmt{color:var(--blue);font-weight:600;margin-top:18px;display:inline-block;cursor:pointer;}
+
+  .paybtn{margin:16px;padding:16px;background:var(--blue-soft);border-radius:var(--radius);
+    text-align:center;color:var(--blue);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
+
+  /* ---------- wellbeing hero ---------- */
+  .hero{margin:4px 16px 0;padding:18px;border-radius:var(--radius);color:#fff;cursor:pointer;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#0a3f6e 0%,#0f5aa0 55%,#0a3f6e 100%);box-shadow:0 6px 18px rgba(10,63,110,.3);}
+  .hero .tag{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;opacity:.85;display:flex;align-items:center;gap:6px;}
+  .hero h3{font-size:18px;font-weight:800;margin:6px 0 2px;}
+  .hero .sub{font-size:13px;opacity:.9;margin-bottom:14px;}
+  .hero .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.25);overflow:hidden;}
+  .hero .bar>span{display:block;height:100%;background:#fff;border-radius:6px;}
+  .hero .barlbl{display:flex;justify-content:space-between;font-size:12px;margin-top:8px;font-weight:600;}
+  .hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .hero .go{font-size:13px;font-weight:700;opacity:.95;white-space:nowrap;}
+
+  /* ---------- section headings ---------- */
+  .sechead{font-size:13px;font-weight:700;color:var(--grey);letter-spacing:.4px;
+    text-transform:uppercase;padding:22px 20px 8px;}
+
+  /* ---------- activity ---------- */
+  .actlist{margin:0 16px;padding:4px 0;}
+  .act{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;}
+  .act .ico{width:38px;height:38px;border-radius:10px;background:#F0F4F8;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue);font-weight:800;font-size:15px;}
+  .act .mid{flex:1;min-width:0;}
+  .act .mid .t{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .act .mid .d{font-size:12px;color:var(--grey);margin-top:2px;}
+  .act .amt{font-size:15px;font-weight:700;text-align:right;white-space:nowrap;}
+  .act .amt small{display:block;font-size:11px;font-weight:700;color:var(--green);margin-top:2px;}
+  .badge3x{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .badge5x{background:var(--gold);color:#3a2f13;}
+
+  /* ---------- list rows (account / hub) ---------- */
+  .listrow{display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer;}
+  .listrow .li-ic{width:26px;display:flex;justify-content:center;color:var(--blue);flex-shrink:0;}
+  .listrow .li-main{flex:1;}
+  .listrow .li-main .li-t{font-size:16px;font-weight:600;}
+  .listrow .li-main .li-s{font-size:12.5px;color:var(--grey);margin-top:2px;}
+  .listrow .chev{color:var(--grey2);}
+
+  /* ---------- profile block ---------- */
+  .profile{margin:8px 16px 0;padding:20px;display:flex;flex-direction:column;gap:2px;}
+  .profile .ph{display:flex;align-items:center;gap:14px;}
+  .profile .av{width:52px;height:52px;border-radius:50%;background:#0a3f6e;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px;}
+  .profile .nm{font-size:22px;font-weight:800;color:#0a3f6e;}
+  .profile .ms{font-size:13px;color:var(--grey);margin-top:2px;}
+  .profile .desc{font-size:14px;color:var(--ink);margin:14px 0;}
+  .profile .gtp{background:var(--blue-soft);border-radius:12px;padding:14px;text-align:center;color:var(--blue);font-weight:700;cursor:pointer;}
+
+  /* ---------- membership points ---------- */
+  .mrhead{text-align:center;padding:20px 16px 4px;}
+  .mrhead .lbl{font-size:16px;font-weight:600;}
+  .mrhead .big{font-size:44px;font-weight:800;letter-spacing:-1px;margin:2px 0;}
+  .mrhead .sub{font-size:14px;color:var(--grey);}
+  .mrbtn{display:block;width:200px;margin:14px auto 6px;background:var(--blue);color:#fff;border:none;
+    font-family:var(--font);font-size:16px;font-weight:700;padding:14px;border-radius:12px;cursor:pointer;}
+  .spendbonus{margin:16px;padding:18px;}
+  .spendbonus .t{font-size:17px;font-weight:700;}
+  .spendbonus .s{font-size:13.5px;color:var(--grey);margin:6px 0 12px;line-height:1.4;}
+  .pbar{height:8px;border-radius:6px;background:#E9EBED;overflow:hidden;}
+  .pbar>span{display:block;height:100%;background:var(--blue);border-radius:6px;}
+  .pbar-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--grey);margin-top:7px;font-weight:600;}
+  .tiles{display:flex;gap:14px;padding:6px 16px 0;}
+  .tile{flex:1;height:120px;border-radius:14px;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;cursor:pointer;}
+  .tile.refer{background:linear-gradient(160deg,#7a6a55,#4a3f30);}
+  .tile.redeem{background:linear-gradient(160deg,#0f5aa0,#0a3f6e);}
+  .tile .tt{font-size:15px;font-weight:800;z-index:2;}
+  .tile .ti{position:absolute;top:12px;left:12px;width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue);}
+
+  /* ---------- hub ---------- */
+  .hubbanner{margin:12px 16px 0;padding:16px 18px;border-radius:var(--radius);color:#fff;
+    background:linear-gradient(135deg,#0a3f6e,#0f5aa0);}
+  .hubbanner .t{font-size:15px;font-weight:800;}
+  .hubbanner .s{font-size:12.5px;opacity:.9;margin-top:3px;line-height:1.4;}
+  .hubcard{margin:12px 16px 0;border-radius:var(--radius);overflow:hidden;}
+  .hubitem{display:flex;align-items:center;gap:14px;padding:16px 16px;cursor:pointer;background:var(--card);}
+  .hubitem .hi-ic{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;}
+  .hi-blue{background:linear-gradient(135deg,#0f5aa0,#0a3f6e);}
+  .hi-gold{background:linear-gradient(135deg,#caa64e,#b48c34);color:#fff;}
+  .hi-teal{background:linear-gradient(135deg,#128a7d,#0c6a60);}
+  .hi-slate{background:linear-gradient(135deg,#4a5568,#2d3446);}
+  .hi-plum{background:linear-gradient(135deg,#6b4a8c,#4a2f66);}
+  .hubitem .hi-main{flex:1;}
+  .hubitem .hi-t{font-size:16px;font-weight:700;}
+  .hubitem .hi-s{font-size:12.5px;color:var(--grey);margin-top:2px;line-height:1.35;}
+  .pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+  .pill-open{background:#E4F5EA;color:var(--green);}
+  .pill-new{background:var(--blue-soft);color:var(--blue);}
+
+  /* ---------- accelerator detail ---------- */
+  .acchead{margin:6px 16px 0;padding:24px 20px;text-align:center;}
+  .ring-wrap{position:relative;width:180px;height:180px;margin:6px auto 4px;}
+  .ring-wrap .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring-wrap .lbl .n{font-size:15px;font-weight:800;color:var(--blue);letter-spacing:1px;}
+  .ring-wrap .lbl .a{font-size:26px;font-weight:800;margin-top:2px;}
+  .ring-wrap .lbl .of{font-size:12px;color:var(--grey);margin-top:2px;}
+  .acc-cap-lbl{font-size:12px;font-weight:800;color:var(--grey);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+  .acc-headroom{font-size:14px;color:var(--ink);margin-top:6px;}
+  .acc-headroom b{color:var(--blue);}
+  .ptsline{margin:14px 16px 0;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;}
+  .ptsline .pl-l{font-size:13px;color:var(--grey);}
+  .ptsline .pl-n{font-size:22px;font-weight:800;}
+  .ptsline .pl-plus{font-size:12px;font-weight:700;color:var(--green);margin-top:2px;}
+  .brk{margin:14px 16px 0;overflow:hidden;border-radius:var(--radius);}
+  .brk .br{display:flex;align-items:center;gap:12px;padding:15px 16px;background:var(--card);}
+  .brk .br .bic{width:36px;height:36px;border-radius:9px;background:#F0F4F8;display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0;}
+  .brk .br .bm{flex:1;}
+  .brk .br .bm .bt{font-size:15px;font-weight:600;}
+  .brk .br .bm .bs{font-size:12px;color:var(--grey);margin-top:2px;}
+  .brk .br .bv{font-weight:700;font-size:15px;}
+  .footnote{font-size:12px;color:var(--grey);line-height:1.5;padding:16px 22px 6px;}
+
+  /* ---------- offers ---------- */
+  .offer{margin:12px 16px 0;border-radius:var(--radius);overflow:hidden;cursor:pointer;}
+  .offer .oimg{height:96px;position:relative;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:800;font-size:16px;}
+  .offer .obody{padding:14px 16px;background:var(--card);}
+  .offer .obody .ot{font-size:15px;font-weight:700;}
+  .offer .obody .os{font-size:13px;color:var(--grey);margin-top:3px;}
+  .offer .added{display:inline-flex;align-items:center;gap:5px;color:var(--green);font-weight:700;font-size:13px;margin-top:8px;}
+  .offer .addlink{color:var(--blue);font-weight:700;font-size:14px;margin-top:8px;display:inline-block;}
+
+  /* ---------- generic detail hero ---------- */
+  .dhero{height:200px;position:relative;display:flex;align-items:flex-end;color:#fff;padding:20px;}
+  .dhero .dh-t{font-size:24px;font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .dhero .dh-loc{font-size:13px;opacity:.95;margin-top:2px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .dhero .dh-pill{position:absolute;top:16px;left:16px;background:#E4F5EA;color:var(--green);font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;}
+  .infoblock{margin:14px 16px 0;padding:16px 18px;}
+  .infoblock .ib-row{display:flex;align-items:center;gap:12px;padding:11px 0;}
+  .infoblock .ib-row+.ib-row{border-top:1px solid var(--line);}
+  .infoblock .ib-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ib-ic.g{background:#FBF3DE;color:#a97e1f;}
+  .ib-ic.b{background:var(--blue-soft);color:var(--blue);}
+  .ib-ic.t{background:#E1F4F0;color:#0c6a60;}
+  .infoblock .ib-m .ib-t{font-size:15px;font-weight:700;}
+  .infoblock .ib-m .ib-s{font-size:12.5px;color:var(--grey);margin-top:2px;line-height:1.35;}
+  .pkg{margin:14px 16px 0;padding:16px 18px;}
+  .pkg .pk-t{font-size:16px;font-weight:700;}
+  .pkg .pk-s{font-size:13px;color:var(--grey);margin:4px 0 8px;}
+  .pkg .pk-p{font-size:22px;font-weight:800;}
+  .pkg .pk-p small{font-size:13px;font-weight:600;color:var(--grey);}
+
+  /* ---------- CTA button ---------- */
+  .cta{margin:20px 16px 8px;padding:16px;background:var(--blue);color:#fff;border:none;width:calc(100% - 32px);
+    font-family:var(--font);font-size:16px;font-weight:700;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .cta.ghost{background:var(--blue-soft);color:var(--blue);}
+
+  /* ---------- protection / txn ---------- */
+  .txnhead{margin:8px 16px 0;padding:22px;text-align:center;}
+  .txnhead .th-m{font-size:15px;color:var(--grey);}
+  .txnhead .th-a{font-size:32px;font-weight:800;margin:4px 0;}
+  .txnhead .th-d{font-size:13px;color:var(--grey);}
+  .protcard{margin:14px 16px 0;overflow:hidden;border-radius:var(--radius);}
+  .protrow{display:flex;align-items:flex-start;gap:13px;padding:16px;background:var(--card);}
+  .protrow .pc-ic{width:38px;height:38px;border-radius:50%;background:#E4F5EA;color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .protrow .pc-m .pc-t{font-size:15px;font-weight:700;}
+  .protrow .pc-m .pc-s{font-size:12.5px;color:var(--grey);margin-top:3px;line-height:1.4;}
+
+  /* ---------- concierge ---------- */
+  .timeline{margin:16px 20px 0;}
+  .tl{display:flex;gap:14px;position:relative;padding-bottom:20px;}
+  .tl:before{content:"";position:absolute;left:9px;top:22px;bottom:-4px;width:2px;background:var(--line);}
+  .tl:last-child:before{display:none;}
+  .tl .dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:#fff;border:2px solid var(--line);z-index:2;}
+  .tl.done .dot{background:var(--green);border-color:var(--green);}
+  .tl.active .dot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft);}
+  .tl .tl-m .tl-t{font-size:15px;font-weight:700;}
+  .tl .tl-m .tl-s{font-size:12.5px;color:var(--grey);margin-top:2px;line-height:1.4;}
+  .tl .tl-m .tl-time{font-size:11px;color:var(--grey2);margin-top:3px;}
+
+  /* ---------- annual statement ---------- */
+  .stmthead{padding:26px 20px 10px;text-align:center;color:#fff;
+    background:linear-gradient(150deg,#0a3f6e 0%,#0f5aa0 60%,#0a3f6e 100%);}
+  .stmthead .yr{font-size:12px;font-weight:700;letter-spacing:2px;opacity:.85;text-transform:uppercase;}
+  .stmthead .t{font-size:20px;font-weight:800;margin:6px 0 16px;}
+  .stmthead .val{font-size:46px;font-weight:800;letter-spacing:-1px;}
+  .stmthead .vs{font-size:13px;opacity:.9;margin-top:4px;}
+  .stmthead .mult{display:inline-block;margin-top:12px;background:rgba(255,255,255,.16);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px;}
+  .chip{background:var(--card);border-radius:12px;padding:12px 14px;flex:1 1 44%;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .chip .cn{font-size:18px;font-weight:800;}
+  .chip .cl{font-size:12px;color:var(--grey);margin-top:2px;line-height:1.3;}
+  .valtable{margin:6px 16px 0;overflow:hidden;border-radius:var(--radius);}
+  .vt{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--card);}
+  .vt+.vt{border-top:1px solid var(--line);}
+  .vt .vt-l{font-size:14.5px;font-weight:600;}
+  .vt .vt-l small{display:block;font-size:11.5px;color:var(--grey);font-weight:500;margin-top:2px;}
+  .vt .vt-v{font-size:15px;font-weight:800;}
+  .vt.total{background:#0a3f6e;color:#fff;}
+  .vt.total .vt-v{color:#fff;}
+  .renew{margin:16px;padding:18px;border-radius:var(--radius);background:#FBF3DE;}
+  .renew .rt{font-size:15px;font-weight:800;color:#7a5a12;}
+  .renew .rs{font-size:13px;color:#8a6a2a;margin-top:6px;line-height:1.45;}
+
+  /* ---------- toast ---------- */
+  .toast{position:absolute;left:16px;right:16px;bottom:110px;background:#16181A;color:#fff;
+    padding:14px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:80;
+    display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(12px);transition:.28s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.35);}
+  .toast.show{opacity:1;transform:none;}
+  .toast .tk{color:#5fd08a;}
+
+  /* ---------- bottom nav ---------- */
+  .bottomnav{position:absolute;bottom:0;left:0;right:0;height:82px;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:50;padding-bottom:14px;}
+  .bottomnav.hidden{display:none;}
+  .navbtn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    color:var(--grey2);font-size:11px;font-weight:600;cursor:pointer;background:none;border:none;font-family:var(--font);}
+  .navbtn.active{color:var(--blue);}
+  .navbtn svg{display:block;}
+
+  .disclaimer{padding:16px 22px 8px;font-size:10.5px;color:var(--grey2);line-height:1.5;text-align:center;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <!-- status bar -->
+  <div class="statusbar">
+    <span>11:55</span>
+    <span class="sig">
+      <svg width="18" height="11" viewBox="0 0 18 11"><g fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="5" y="4.5" width="3" height="6.5" rx="1"/><rect x="10" y="2" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="11" rx="1"/></g></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM3 6.2a7 7 0 0110 0l-1.4 1.4a5 5 0 00-7.2 0L3 6.2zM.6 3.8a10.4 10.4 0 0114.8 0L14 5.2a8.4 8.4 0 00-12 0L.6 3.8z"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="1" width="21" height="10" rx="2.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2.5" width="16" height="7" rx="1.2" fill="currentColor"/><rect x="23" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/><text x="10" y="9.2" font-size="6.5" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial">45</text></svg>
+    </span>
+  </div>
+
+  <div class="viewport" id="viewport">
+
+    <!-- ============ HOME ============ -->
+    <section class="screen tab active" id="home" data-tab="home">
+      <div class="appbar">
+        <div class="ic" title="Cards">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="6" width="16" height="11" rx="2"/><path d="M6 10h20" opacity="0"/><rect x="6" y="3" width="16" height="11" rx="2" fill="var(--bg)"/><path d="M6 8h16" stroke="currentColor"/></svg>
+        </div>
+        <div class="ic"></div>
+        <div class="ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+      </div>
+
+      <div class="carousel">
+        <!-- Premier card -->
+        <div class="amexcard" onclick="scrollToActivity()">
+          <div class="guilloche"></div>
+          <div class="cc-top">
+            <div class="cc-brand">AMERICAN<br>EXPRESS<span>®</span></div>
+            <div class="cc-word">PREMIER</div>
+          </div>
+          <div class="emblem">
+            <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none" stroke="#C9A24B" stroke-width="1" opacity=".7"/><path d="M20 15c4-2 9-1 11 3 2 4 1 9-2 12-1 1-3 2-5 2 3-2 5-5 5-9 0-5-4-9-9-8z" fill="#C9A24B" opacity=".85"/><path d="M18 34c2-1 5-1 7 0-2 2-5 2-7 0z" fill="#C9A24B" opacity=".7"/></svg>
+          </div>
+          <div class="cc-chip"></div>
+          <div class="cc-wave"><svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="#EDEFF2" stroke-width="1.4"><path d="M3 4a9 9 0 010 10M7 2a13 13 0 010 14M11 0a17 17 0 010 18" opacity=".8"/></svg></div>
+          <div class="cc-name">ADITYA KAUL</div>
+          <div class="cc-since">MEMBER SINCE 17</div>
+          <div class="cc-num">···· 42007</div>
+        </div>
+        <!-- Gold card (secondary) -->
+        <div class="amexcard gold">
+          <div class="guilloche"></div>
+          <div class="cc-top">
+            <div class="cc-brand" style="color:#3a2f13">AMERICAN<br>EXPRESS<span style="color:#3a2f13">®</span></div>
+            <div class="cc-word">GOLD</div>
+          </div>
+          <div class="cc-chip"></div>
+          <div class="cc-name">ADITYA KAUL</div>
+          <div class="cc-since">MEMBER SINCE 17</div>
+          <div class="cc-num">···· 81004</div>
+        </div>
+      </div>
+
+      <div class="card balance">
+        <h2>Total balance</h2>
+        <div class="amt">₹2,86,450.00</div>
+        <div class="line-item"><span>Balance due</span><b>₹0.00</b></div>
+        <div class="sub">Payment not required at this time</div>
+        <div class="line-item"><span>Available to spend</span><b>No preset limit</b></div>
+        <div class="line-item"><span>Premier CC Points</span><b>68,450</b></div>
+        <div class="divider" style="margin-top:16px"></div>
+        <span class="stmt">Statements and Activity</span>
+      </div>
+
+      <!-- WELLBEING HERO -->
+      <div class="hero" onclick="go('wellbeing')">
+        <div class="hero-top">
+          <div class="tag">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.35-9.5-8.5C.5 9 2 5 5.5 5 8 5 9 7 12 7s4-2 6.5-2C22 5 23.5 9 21.5 12.5 19 16.65 12 21 12 21z"/></svg>
+            PREMIER WELLBEING
+          </div>
+          <div class="go">Open ›</div>
+        </div>
+        <div class="bar" style="margin-top:14px"><span style="width:34%"></span></div>
+        <div class="barlbl"><span>₹67,155 of ₹2,00,000 at 3×</span><span>₹1.33L headroom</span></div>
+      </div>
+
+      <div class="sechead" id="acthead">Recent Activity</div>
+      <div class="card actlist" style="margin-top:0">
+        <div class="act" onclick="go('protection')">
+          <div class="ico">T</div>
+          <div class="mid"><div class="t">Technogym Home Studio<span class="badge3x">3×</span></div><div class="d">12 Aug · Protected purchase</div></div>
+          <div class="amt">₹1,40,000.00<small>+8,400 pts</small></div>
+        </div>
+        <div class="divider"></div>
+        <div class="act">
+          <div class="ico">C</div>
+          <div class="mid"><div class="t">Cult.fit — Cultpass Elite<span class="badge3x">3×</span></div><div class="d">09 Aug · Membership</div></div>
+          <div class="amt">₹17,490.00<small>+1,049 pts</small></div>
+        </div>
+        <div class="divider"></div>
+        <div class="act">
+          <div class="ico">O</div>
+          <div class="mid"><div class="t">Oura Ring India<span class="badge3x">3×</span></div><div class="d">02 Aug · Technology</div></div>
+          <div class="amt">₹41,999.00<small>+2,520 pts</small></div>
+        </div>
+        <div class="divider"></div>
+        <div class="act">
+          <div class="ico" style="color:var(--green);background:#E4F5EA">✓</div>
+          <div class="mid"><div class="t" style="color:var(--green)">PAYMENT RECEIVED · THANK YOU</div><div class="d">28 Jul</div></div>
+          <div class="amt" style="color:var(--green)">−₹1,84,230.00</div>
+        </div>
+      </div>
+      <div class="disclaimer">Prototype for the American Express Campus Challenge 2026. Card, member and figures are illustrative and constructed to be realistic; not a live account.</div>
+    </section>
+
+    <!-- ============ MEMBERSHIP ============ -->
+    <section class="screen tab" id="membership" data-tab="membership">
+      <div class="appbar">
+        <div class="ic"></div>
+        <div class="title">Membership<small>Card Ending · 42007</small></div>
+        <div class="ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+      </div>
+
+      <div class="mrhead">
+        <div class="lbl">Premier CC Points</div>
+        <div class="big">68,450</div>
+        <div class="sub">Available balance · ≈ ₹34,225 transfer value</div>
+        <button class="mrbtn">View Activity</button>
+      </div>
+
+      <div class="card spendbonus">
+        <div class="t">Milestone Bonus</div>
+        <div class="s">Spend ₹7,00,000 by 28 Sep 2026 to earn 22,500 bonus CC points.</div>
+        <div class="pbar"><span style="width:63%"></span></div>
+        <div class="pbar-lbl"><span>₹4,41,000 spent</span><span>of ₹7,00,000</span></div>
+      </div>
+
+      <!-- Wellbeing hub entry inside Membership -->
+      <div class="sechead">Premier Wellbeing</div>
+      <div class="hubbanner" onclick="go('wellbeing')" style="margin-top:0">
+        <div class="row"><div class="t">Your Wellbeing hub</div><div style="font-weight:700;font-size:13px">Open ›</div></div>
+        <div class="s">3× accelerator, wellness offers, retreats & your annual wellbeing value — all in one place.</div>
+      </div>
+
+      <div class="sechead">Rewards Summary</div>
+      <div class="card" style="margin:0 16px">
+        <div class="listrow" style="cursor:default">
+          <div class="li-main"><div class="li-t">Premier CC Points</div><div class="li-s">View Activity</div></div>
+          <div style="font-size:18px;font-weight:800">68,450</div>
+        </div>
+      </div>
+
+      <div class="tiles">
+        <div class="tile refer">
+          <div class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11a4 4 0 10-8 0M4 20a6 6 0 0112 0M17 8l2 2 4-4"/></svg></div>
+          <div class="tt">Refer and Earn</div>
+        </div>
+        <div class="tile redeem" onclick="go('wellbeing')">
+          <div class="ti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 6v12M8 11l4-3 4 3"/></svg></div>
+          <div class="tt">Redeem Rewards</div>
+        </div>
+      </div>
+      <div class="spacer-lg"></div>
+    </section>
+
+    <!-- ============ ACCOUNT ============ -->
+    <section class="screen tab" id="account" data-tab="account">
+      <div class="appbar">
+        <div class="ic"></div>
+        <div class="title">Account</div>
+        <div class="ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+      </div>
+
+      <div class="card profile">
+        <div class="ph">
+          <div class="av">AK</div>
+          <div>
+            <div class="nm">Aditya</div>
+            <div class="ms">Member since '17</div>
+          </div>
+        </div>
+        <div class="desc">Manage your profile by keeping your information up to date.</div>
+        <div class="gtp">✎ Go to Profile</div>
+      </div>
+
+      <div class="sechead">Account Management</div>
+      <div class="card" style="margin:0 16px">
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M18 12h.01M15 12h.01"/></svg></div><div class="li-main"><div class="li-t">Activate and Add Card to Your Account</div></div><div class="chev">›</div></div>
+        <div class="divider"></div>
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M16 11a4 4 0 10-8 0M4 20a6 6 0 0112 0M19 8v6M22 11h-6"/></svg></div><div class="li-main"><div class="li-t">Add a Supplementary Card</div></div><div class="chev">›</div></div>
+        <div class="divider"></div>
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M13 15l2 2 4-4"/></svg></div><div class="li-main"><div class="li-t">Select Default Card</div></div><div class="chev">›</div></div>
+        <div class="divider"></div>
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 12h4"/></svg></div><div class="li-main"><div class="li-t">Manage Card PIN</div></div><div class="chev">›</div></div>
+        <div class="divider"></div>
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M12 8v4M12 15h.01"/></svg></div><div class="li-main"><div class="li-t">Temp Block your Card</div></div><div class="chev">›</div></div>
+        <div class="divider"></div>
+        <div class="listrow"><div class="li-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div><div class="li-main"><div class="li-t">Transaction Security Settings</div></div><div class="chev">›</div></div>
+      </div>
+      <div class="spacer-lg"></div>
+    </section>
+
+    <!-- ============ WELLBEING HUB ============ -->
+    <section class="screen tab" id="wellbeing" data-tab="membership">
+      <div class="backbar">
+        <button onclick="back()">‹ Back</button>
+        <span class="bt-title">Premier Wellbeing</span>
+      </div>
+
+      <div class="hubbanner">
+        <div class="t">The card that earns on your wellbeing.</div>
+        <div class="s">Premier doesn't pay for your wellbeing — it earns on it, protects it, and gets you in.</div>
+      </div>
+
+      <div class="card hubcard">
+        <div class="hubitem" onclick="go('accelerator')">
+          <div class="hi-ic hi-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+          <div class="hi-main"><div class="hi-t">Wellbeing Accelerator</div><div class="hi-s">₹92,155 earned 3× this year · low-ticket cap reached, high-ticket open</div></div>
+          <div class="chev">›</div>
+        </div>
+        <div class="divider"></div>
+        <div class="hubitem" onclick="go('offers')">
+          <div class="hi-ic hi-teal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12l-8 8-9-9V4h7z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/></svg></div>
+          <div class="hi-main"><div class="hi-t">Wellness Offers <span class="pill pill-new">6 new</span></div><div class="hi-s">Merchant-funded credits from premium wellness partners</div></div>
+          <div class="chev">›</div>
+        </div>
+        <div class="divider"></div>
+        <div class="hubitem" onclick="go('travel')">
+          <div class="hi-ic hi-gold"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20M6 18l4-9 4 9M12 3v6M9 9h6"/></svg></div>
+          <div class="hi-main"><div class="hi-t">Wellness Travel <span class="pill pill-open">Window open</span></div><div class="hi-s">5× on retreats · first-release booking · ₹15,000 property credit</div></div>
+          <div class="chev">›</div>
+        </div>
+        <div class="divider"></div>
+        <div class="hubitem" onclick="go('protection')">
+          <div class="hi-ic hi-slate"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="hi-main"><div class="hi-t">Purchase Protection <span class="pill pill-new">1 active</span></div><div class="hi-s">Coverage & warranty confirmed the moment you buy</div></div>
+          <div class="chev">›</div>
+        </div>
+        <div class="divider"></div>
+        <div class="hubitem" onclick="go('statement')">
+          <div class="hi-ic hi-plum"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" opacity="0"/><path d="M6 3h12v18l-6-3-6 3z"/></svg></div>
+          <div class="hi-main"><div class="hi-t">Your Wellbeing Year</div><div class="hi-s">₹11,232 of value earned so far · 3.6× benefit cost</div></div>
+          <div class="chev">›</div>
+        </div>
+      </div>
+      <div class="footnote">3× on high-ticket wellbeing (₹10,000+ per transaction) up to ₹2,00,000 a year; low-ticket purchases (under ₹10,000) earn 3× on the first ₹25,000 a year. 5× on eligible wellness travel. Existing travel, lounge and hotel benefits continue unchanged.</div>
+    </section>
+
+    <!-- ============ ACCELERATOR DETAIL ============ -->
+    <section class="screen detail" id="accelerator">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Wellbeing Accelerator</span></div>
+
+      <!-- HIGH-TICKET tracker -->
+      <div class="card acchead">
+        <div class="acc-cap-lbl">High-ticket · purchases ₹10,000+</div>
+        <div class="ring-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="78" fill="none" stroke="#E9EBED" stroke-width="16"/>
+            <circle cx="90" cy="90" r="78" fill="none" stroke="#006FCF" stroke-width="16" stroke-linecap="round"
+              stroke-dasharray="490" stroke-dashoffset="325" transform="rotate(-90 90 90)"/>
+          </svg>
+          <div class="lbl"><div class="n">3× RATE</div><div class="a">₹67,155</div><div class="of">of ₹2,00,000</div></div>
+        </div>
+        <div class="acc-headroom">You have <b>₹1,32,845</b> of 3× headroom left on high-ticket spend.</div>
+      </div>
+
+      <!-- LOW-TICKET tracker (cap reached) -->
+      <div class="card" style="margin:14px 16px 0;padding:16px 18px">
+        <div class="row" style="margin-bottom:9px">
+          <div class="acc-cap-lbl" style="margin:0">Low-ticket · under ₹10,000</div>
+          <div style="font-size:12px;font-weight:800;color:#B8860B">Cap reached</div>
+        </div>
+        <div class="pbar"><span style="width:100%;background:var(--gold)"></span></div>
+        <div class="pbar-lbl"><span>₹25,000 of ₹25,000 at 3×</span><span>now earning base rate</span></div>
+      </div>
+
+      <div class="card ptsline">
+        <div><div class="pl-l">CC points earned at 3×</div><div class="pl-n">5,529</div></div>
+        <div style="text-align:right"><div class="pl-l">vs 1,843 at base rate</div><div class="pl-plus">+3,686 bonus points</div></div>
+      </div>
+
+      <div class="sechead">Accelerated spend this year · ₹92,155</div>
+      <div class="card brk" style="margin-top:0">
+        <div class="br"><div class="bic">G</div><div class="bm"><div class="bt">Gym & studio memberships</div><div class="bs">Cult.fit, Ultimate Performance</div></div><div class="bv">₹41,250</div></div>
+        <div class="divider"></div>
+        <div class="br"><div class="bic">E</div><div class="bm"><div class="bt">Equipment, tech & recovery</div><div class="bs">Technogym, Oura, Therabody</div></div><div class="bv">₹25,905</div></div>
+        <div class="divider"></div>
+        <div class="br"><div class="bic">S</div><div class="bm"><div class="bt">Supplements & spa</div><div class="bs">Fast&amp;Up, Four Fountains · low-ticket</div></div><div class="bv">₹25,000</div></div>
+      </div>
+      <div class="footnote">3× on high-ticket wellbeing (₹10,000+ per transaction) up to ₹2,00,000 a year. Low-ticket purchases (under ₹10,000) earn 3× on the first ₹25,000 a year, then base rate. Asymmetric by design — like fuel and utilities, everyday spend is capped; premium spend is not.</div>
+    </section>
+
+    <!-- ============ OFFERS ============ -->
+    <section class="screen detail" id="offers">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Wellness Offers</span></div>
+      <div class="footnote" style="padding-top:12px;padding-bottom:0">Add an offer once — the credit posts automatically after you spend. Offers are funded by the partner, at no cost to your benefit budget.</div>
+
+      <div class="card offer" onclick="openOffer('therabody')">
+        <div class="oimg" style="background:linear-gradient(135deg,#2d3446,#4a5568)">Therabody</div>
+        <div class="obody"><div class="ot">Get 20% back, up to ₹3,000</div><div class="os">On Theragun & recovery devices · expires 30 Sep</div>
+          <div id="badge-therabody" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('oura')">
+        <div class="oimg" style="background:linear-gradient(135deg,#0c6a60,#128a7d)">Oura</div>
+        <div class="obody"><div class="ot">₹2,000 back on membership + ring</div><div class="os">Sleep & readiness tracking · expires 15 Oct</div>
+          <div id="badge-oura" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('fastup')">
+        <div class="oimg" style="background:linear-gradient(135deg,#0a3f6e,#0f5aa0)">Fast&amp;Up</div>
+        <div class="obody"><div class="ot">Spend ₹4,000, get ₹800 back</div><div class="os">Nutrition & supplements · expires 30 Sep</div>
+          <div id="badge-fastup" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('fourfountains')">
+        <div class="oimg" style="background:linear-gradient(135deg,#6b4a8c,#4a2f66)">Four Fountains Spa</div>
+        <div class="obody"><div class="ot">₹1,000 back on ₹5,000</div><div class="os">De-stress spa therapies · expires 20 Oct</div>
+          <div id="badge-fourfountains" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('kama')">
+        <div class="oimg" style="background:linear-gradient(135deg,#3f5a3a,#5c7a52)">Kama Ayurveda</div>
+        <div class="obody"><div class="ot">Get 15% back, up to ₹2,500</div><div class="os">Ayurvedic wellness & grooming · expires 12 Oct</div>
+          <div id="badge-kama" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('sleepco')">
+        <div class="oimg" style="background:linear-gradient(135deg,#7a3b3b,#a85454)">The Sleep Company</div>
+        <div class="obody"><div class="ot">₹3,000 back on mattresses</div><div class="os">Sleep & recovery · expires 05 Nov</div>
+          <div id="badge-sleepco" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="spacer-lg"></div>
+    </section>
+
+    <!-- ============ OFFER DETAIL ============ -->
+    <section class="screen detail" id="offer-detail">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Offer</span></div>
+      <div class="dhero" id="od-hero" style="background:linear-gradient(135deg,#2d3446,#4a5568)">
+        <div><div class="dh-t" id="od-brand">Therabody</div><div class="dh-loc" id="od-cat">Recovery devices</div></div>
+      </div>
+      <div class="card infoblock" style="margin-top:16px">
+        <div class="ib-row"><div class="ib-ic b">%</div><div class="ib-m"><div class="ib-t" id="od-offer">Get 20% back, up to ₹3,000</div><div class="ib-s">Statement credit posts automatically within 5 days of a qualifying purchase.</div></div></div>
+        <div class="ib-row"><div class="ib-ic g">3×</div><div class="ib-m"><div class="ib-t">Plus 3× CC points</div><div class="ib-s">Eligible spend also counts toward your ₹1,50,000 accelerator.</div></div></div>
+      </div>
+      <button class="cta" id="od-addbtn" onclick="addOffer()">+ Add to Card</button>
+      <div class="footnote">One tap enrols the offer to your Premier Card. No coupon code, nothing to show at checkout — pay with Premier and the credit is applied for you.</div>
+    </section>
+
+    <!-- ============ TRAVEL LIST ============ -->
+    <section class="screen detail" id="travel">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Wellness Travel</span></div>
+      <div class="hubbanner" style="margin-top:12px;background:linear-gradient(135deg,#128a7d,#0c6a60)">
+        <div class="t">First-release window is open</div>
+        <div class="s">Book 2 weeks before public release · 6 days left. Earn 5× and a ₹15,000 on-property credit.</div>
+      </div>
+
+      <div class="card offer" onclick="openProperty('ananda')" style="margin-top:16px">
+        <div class="oimg" style="background:linear-gradient(135deg,#1f5c4d,#3f8a6f)"><span style="z-index:2">Ananda in the Himalayas</span></div>
+        <div class="obody"><div class="ot">Rishikesh, Uttarakhand <span class="pill pill-open">First-release</span></div><div class="os">Dhyana wellness programme · 5× · ₹15,000 credit</div></div>
+      </div>
+      <div class="card offer" onclick="openProperty('vana')">
+        <div class="oimg" style="background:linear-gradient(135deg,#3a4a5c,#5c6f82)"><span style="z-index:2">Six Senses Vana</span></div>
+        <div class="obody"><div class="ot">Dehradun, Uttarakhand <span class="pill pill-open">First-release</span></div><div class="os">Integrated wellness · 5× · ₹15,000 credit</div></div>
+      </div>
+      <div class="card offer" onclick="openProperty('atmantan')">
+        <div class="oimg" style="background:linear-gradient(135deg,#5c4a2f,#8a6f47)"><span style="z-index:2">Atmantan Wellness Centre</span></div>
+        <div class="obody"><div class="ot">Mulshi, Maharashtra</div><div class="os">Detox & fitness retreats · 5× CC points</div></div>
+      </div>
+      <div class="card offer" onclick="openProperty('soukya')">
+        <div class="oimg" style="background:linear-gradient(135deg,#4a3f66,#6b5a8c)"><span style="z-index:2">SOUKYA</span></div>
+        <div class="obody"><div class="ot">Whitefield, Bengaluru</div><div class="os">Holistic healing · 5× CC points</div></div>
+      </div>
+      <div class="spacer-lg"></div>
+    </section>
+
+    <!-- ============ PROPERTY DETAIL ============ -->
+    <section class="screen detail" id="property">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Retreat</span></div>
+      <div class="dhero" id="pr-hero" style="background:linear-gradient(135deg,#1f5c4d,#3f8a6f)">
+        <div class="dh-pill" id="pr-pill">First-release · opens to you 2 weeks early</div>
+        <div><div class="dh-t" id="pr-name">Ananda in the Himalayas</div><div class="dh-loc" id="pr-loc">Rishikesh, Uttarakhand</div></div>
+      </div>
+
+      <div class="card infoblock" style="margin-top:16px">
+        <div class="ib-row"><div class="ib-ic g">5×</div><div class="ib-m"><div class="ib-t">Earn 5× CC points</div><div class="ib-s">A wellness retreat is travel — so it earns at your flagship rate.</div></div></div>
+        <div class="ib-row"><div class="ib-ic b">₹</div><div class="ib-m"><div class="ib-t">₹15,000 on-property credit</div><div class="ib-s">Co-funded with the property · applied during your stay for spa, dining or therapies.</div></div></div>
+        <div class="ib-row"><div class="ib-ic t">⏱</div><div class="ib-m"><div class="ib-t">First-release booking window</div><div class="ib-s" id="pr-window">Opens to Premier members 2 weeks before public release · 6 days left.</div></div></div>
+      </div>
+
+      <div class="card pkg">
+        <div class="pk-t">Dhyana Wellness Programme · 2 guests</div>
+        <div class="pk-s">5 nights · yoga, Ayurveda, spa & consultations included</div>
+        <div class="pk-p">from ₹2,00,000 <small>per stay</small></div>
+      </div>
+
+      <button class="cta" onclick="go('book-confirm')">Book with Premier</button>
+      <div class="footnote">You'll confirm dates and guests with the concierge. Points and the property credit are applied automatically to your Premier Card.</div>
+    </section>
+
+    <!-- ============ BOOKING CONFIRM ============ -->
+    <section class="screen detail" id="book-confirm">
+      <div class="backbar"><button onclick="tab('home')">‹ Done</button><span class="bt-title">Booking confirmed</span></div>
+      <div class="card txnhead" style="margin-top:16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:#E4F5EA;color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:30px">✓</div>
+        <div class="th-a" style="font-size:22px">Ananda in the Himalayas</div>
+        <div class="th-d">12–17 May 2026 · Dhyana Programme · 2 guests</div>
+      </div>
+      <div class="card infoblock" style="margin-top:14px">
+        <div class="ib-row"><div class="ib-ic g">5×</div><div class="ib-m"><div class="ib-t">20,000 CC points</div><div class="ib-s">Earned at 5× on your ₹2,00,000 stay.</div></div></div>
+        <div class="ib-row"><div class="ib-ic b">₹</div><div class="ib-m"><div class="ib-t">₹15,000 property credit added</div><div class="ib-s">Ready to use on spa, dining and therapies on-site.</div></div></div>
+        <div class="ib-row"><div class="ib-ic t">☎</div><div class="ib-m"><div class="ib-t">Concierge will confirm within 24 hours</div><div class="ib-s">Transfers and arrival details handled for you.</div></div></div>
+      </div>
+      <button class="cta ghost" onclick="tab('home')">Back to Home</button>
+    </section>
+
+    <!-- ============ PROTECTION ============ -->
+    <section class="screen detail" id="protection">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Purchase</span></div>
+      <div class="card txnhead" style="margin-top:16px">
+        <div class="th-m">Technogym Home Studio</div>
+        <div class="th-a">₹1,40,000.00</div>
+        <div class="th-d">12 Aug 2026 · Premier Card ···· 42007 · <span style="color:var(--blue);font-weight:700">3× · +8,400 pts</span></div>
+      </div>
+
+      <div class="card protcard">
+        <div class="protrow"><div class="pc-ic">✓</div><div class="pc-m"><div class="pc-t">Purchase Protected</div><div class="pc-s">Covered against damage or theft for 90 days, up to ₹10,00,000. Confirmed instantly at checkout — this was an integrated partner.</div></div></div>
+        <div class="divider"></div>
+        <div class="protrow"><div class="pc-ic">✓</div><div class="pc-m"><div class="pc-t">Extended Warranty · +1 year</div><div class="pc-s">Added on top of the manufacturer warranty and registered at checkout.</div></div></div>
+        <div class="divider"></div>
+        <div class="protrow"><div class="pc-ic">✓</div><div class="pc-m"><div class="pc-t">Zero-liability fraud cover</div><div class="pc-s">You're never liable for unauthorised charges.</div></div></div>
+      </div>
+
+      <button class="cta" onclick="go('concierge')">Ask Concierge to track installation</button>
+      <div class="footnote">Confirmed instantly at integrated partner checkouts, and by one-tap receipt upload everywhere else — so you know your purchase is covered before you leave the checkout, not after a claim.</div>
+    </section>
+
+    <!-- ============ CONCIERGE ============ -->
+    <section class="screen detail" id="concierge">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Concierge</span></div>
+      <div class="card" style="margin:16px;padding:20px">
+        <div style="font-size:17px;font-weight:800">Installation tracking</div>
+        <div class="muted" style="font-size:13px;margin-top:4px">Technogym Home Studio · Ref #PR-48213</div>
+        <div class="timeline">
+          <div class="tl done"><div class="dot"></div><div class="tl-m"><div class="tl-t">Request received</div><div class="tl-s">Concierge picked up your request.</div><div class="tl-time">12 Aug · 9:14 AM</div></div></div>
+          <div class="tl done"><div class="dot"></div><div class="tl-m"><div class="tl-t">Contacted Technogym</div><div class="tl-s">Confirmed your order and delivery slot.</div><div class="tl-time">12 Aug · 11:02 AM</div></div></div>
+          <div class="tl active"><div class="dot"></div><div class="tl-m"><div class="tl-t">Installation scheduled</div><div class="tl-s">Certified installer booked for 18 Aug, 10 AM–1 PM.</div><div class="tl-time">Today · 4:38 PM</div></div></div>
+          <div class="tl"><div class="dot"></div><div class="tl-m"><div class="tl-t">Installed & confirmed</div><div class="tl-s">We'll close the loop once it's set up.</div></div></div>
+        </div>
+      </div>
+      <button class="cta ghost" onclick="back()">Message concierge</button>
+      <div class="footnote">You made one purchase. The scheduling, chasing and confirming is done for you — that's the time the card buys back.</div>
+    </section>
+
+    <!-- ============ ANNUAL STATEMENT ============ -->
+    <section class="screen detail" id="statement">
+      <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Your Wellbeing Year</span></div>
+      <div class="stmthead">
+        <div class="yr">Premier · 2026 so far</div>
+        <div class="t">Aditya, here's what Premier did for your wellbeing</div>
+        <div class="val">₹11,232</div>
+        <div class="vs">of realised value this year</div>
+        <div class="mult">3.6× the cost of the benefits</div>
+      </div>
+
+      <div class="chips">
+        <div class="chip"><div class="cn">5,529</div><div class="cl">CC points earned at 3× this year</div></div>
+        <div class="chip"><div class="cn">1</div><div class="cl">retreat accessed via first-release</div></div>
+        <div class="chip"><div class="cn">3</div><div class="cl">purchases protected & under warranty</div></div>
+        <div class="chip"><div class="cn">9</div><div class="cl">wellness offers used</div></div>
+      </div>
+
+      <div class="sechead">Where the value came from</div>
+      <div class="valtable" style="margin-top:0">
+        <div class="vt"><div class="vt-l">Accelerated CC points<small>3× wellness · 5× wellness travel</small></div><div class="vt-v">₹2,259</div></div>
+        <div class="vt"><div class="vt-l">Wellness offers claimed<small>Merchant-funded credits</small></div><div class="vt-v">₹4,929</div></div>
+        <div class="vt"><div class="vt-l">Purchase protection & warranty<small>Cover you'd otherwise buy separately</small></div><div class="vt-v">₹2,044</div></div>
+        <div class="vt"><div class="vt-l">Concierge escalations<small>Time handed back to you</small></div><div class="vt-v">₹500</div></div>
+        <div class="vt"><div class="vt-l">Property credit used<small>On your retreat stay</small></div><div class="vt-v">₹1,500</div></div>
+        <div class="vt"><div class="vt-l">First-release access<small>Booking windows others don't get</small></div><div class="vt-v">Priceless</div></div>
+        <div class="vt total"><div class="vt-l" style="color:#fff">Total realised value</div><div class="vt-v">₹11,232</div></div>
+      </div>
+
+      <div class="renew">
+        <div class="rt">Why this renews</div>
+        <div class="rs">Your first-release standing and service history stay with the card — and lapse if you leave. Renewal isn't a points balance weighed against a fee; it's a year of value you can see.</div>
+      </div>
+      <div class="footnote">Illustrative figures for the Campus Challenge, built on a consistent expected-value basis (member value ₹11,232 vs benefit cost ₹3,112 ≈ 3.6×).</div>
+    </section>
+
+  </div><!-- /viewport -->
+
+  <!-- toast -->
+  <div class="toast" id="toast"><span class="tk">✓</span><span id="toast-msg">Added to your Premier Card</span></div>
+
+  <!-- bottom nav -->
+  <div class="bottomnav" id="bottomnav">
+    <button class="navbtn active" data-nav="home" onclick="tab('home')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10" fill="none"/><path d="M9 20v-6h6v6"/></svg>
+      Home
+    </button>
+    <button class="navbtn" data-nav="membership" onclick="tab('membership')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 2l8 4.6v8.8L12 20l-8-4.6V6.6z"/><path d="M12 8l1.2 2.4 2.6.3-1.9 1.8.5 2.6L12 14l-2.4 1.1.5-2.6-1.9-1.8 2.6-.3z" fill="currentColor" stroke="none"/></svg>
+      Membership
+    </button>
+    <button class="navbtn" data-nav="account" onclick="tab('account')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
+      Account
+    </button>
+  </div>
+</div>
+
+<script>
+  var stack = ['home'];
+  var TABS = ['home','membership','account'];
+
+  function current(){ return stack[stack.length-1]; }
+
+  function render(){
+    var id = current();
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('active', s.id===id); });
+    var el = document.getElementById(id);
+    // bottom nav: show on tab screens + wellbeing hub
+    var showNav = el.classList.contains('tab');
+    var nav = document.getElementById('bottomnav');
+    nav.classList.toggle('hidden', !showNav);
+    // active nav highlight follows data-tab of the screen
+    var navKey = el.getAttribute('data-tab');
+    document.querySelectorAll('.navbtn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-nav')===navKey);
+    });
+    // scroll to top of the shown screen
+    if(el) el.scrollTop = 0;
+  }
+
+  function go(id){ stack.push(id); render(); }
+  function back(){ if(stack.length>1){ stack.pop(); render(); } }
+  function tab(id){ stack = [id]; render(); }
+
+  function scrollToActivity(){
+    var h = document.getElementById('home');
+    var t = document.getElementById('acthead');
+    h.scrollTo({top:t.offsetTop-70, behavior:'smooth'});
+  }
+
+  // ---- offers ----
+  var OFFERS = {
+    therabody:{brand:'Therabody', cat:'Recovery devices', offer:'Get 20% back, up to ₹3,000', grad:'linear-gradient(135deg,#2d3446,#4a5568)'},
+    oura:{brand:'Oura', cat:'Sleep & readiness', offer:'₹2,000 back on membership + ring', grad:'linear-gradient(135deg,#0c6a60,#128a7d)'},
+    fastup:{brand:'Fast&Up', cat:'Nutrition & supplements', offer:'Spend ₹4,000, get ₹800 back', grad:'linear-gradient(135deg,#0a3f6e,#0f5aa0)'},
+    fourfountains:{brand:'Four Fountains Spa', cat:'De-stress therapies', offer:'₹1,000 back on ₹5,000', grad:'linear-gradient(135deg,#6b4a8c,#4a2f66)'},
+    kama:{brand:'Kama Ayurveda', cat:'Wellness & grooming', offer:'Get 15% back, up to ₹2,500', grad:'linear-gradient(135deg,#3f5a3a,#5c7a52)'},
+    sleepco:{brand:'The Sleep Company', cat:'Sleep & recovery', offer:'₹3,000 back on mattresses', grad:'linear-gradient(135deg,#7a3b3b,#a85454)'}
+  };
+  var added = {};
+  var activeOffer = null;
+
+  function openOffer(key){
+    activeOffer = key;
+    var o = OFFERS[key];
+    document.getElementById('od-hero').style.background = o.grad;
+    document.getElementById('od-brand').textContent = o.brand;
+    document.getElementById('od-cat').textContent = o.cat;
+    document.getElementById('od-offer').textContent = o.offer;
+    var btn = document.getElementById('od-addbtn');
+    if(added[key]){ btn.textContent = '✓ Added to Card'; btn.style.background='var(--green)'; }
+    else { btn.textContent = '+ Add to Card'; btn.style.background='var(--blue)'; }
+    go('offer-detail');
+  }
+
+  function addOffer(){
+    if(!activeOffer) return;
+    added[activeOffer] = true;
+    var btn = document.getElementById('od-addbtn');
+    btn.textContent = '✓ Added to Card'; btn.style.background='var(--green)';
+    // update list badge
+    var lb = document.getElementById('badge-'+activeOffer);
+    if(lb){ lb.className='added'; lb.textContent='✓ Added · credit posts automatically'; }
+    showToast('Added to your Premier Card');
+  }
+
+  // ---- properties ----
+  var PROPS = {
+    ananda:{name:'Ananda in the Himalayas', loc:'Rishikesh, Uttarakhand', grad:'linear-gradient(135deg,#1f5c4d,#3f8a6f)', first:true},
+    vana:{name:'Six Senses Vana', loc:'Dehradun, Uttarakhand', grad:'linear-gradient(135deg,#3a4a5c,#5c6f82)', first:true},
+    atmantan:{name:'Atmantan Wellness Centre', loc:'Mulshi, Maharashtra', grad:'linear-gradient(135deg,#5c4a2f,#8a6f47)', first:false},
+    soukya:{name:'SOUKYA', loc:'Whitefield, Bengaluru', grad:'linear-gradient(135deg,#4a3f66,#6b5a8c)', first:false}
+  };
+  function openProperty(key){
+    var p = PROPS[key];
+    document.getElementById('pr-hero').style.background = p.grad;
+    document.getElementById('pr-name').textContent = p.name;
+    document.getElementById('pr-loc').textContent = p.loc;
+    var pill = document.getElementById('pr-pill');
+    var win = document.getElementById('pr-window');
+    if(p.first){ pill.style.display='block'; pill.textContent='First-release · opens to you 2 weeks early';
+      win.textContent='Opens to Premier members 2 weeks before public release · 6 days left.'; }
+    else { pill.style.display='none';
+      win.textContent='Standard booking · earn 5× and use your ₹15,000 credit on any eligible stay.'; }
+    go('property');
+  }
+
+  // ---- toast ----
+  var toastTimer=null;
+  function showToast(msg){
+    var t=document.getElementById('toast');
+    document.getElementById('toast-msg').textContent=msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ t.classList.remove('show'); },2200);
+  }
+
+  render();
+</script>
+</body>
+</html>
