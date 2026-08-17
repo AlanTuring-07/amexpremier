@@ -562,7 +562,7 @@
         <div class="divider"></div>
         <div class="hubitem" onclick="go('offers')">
           <div class="hi-ic hi-teal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12l-8 8-9-9V4h7z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/></svg></div>
-          <div class="hi-main"><div class="hi-t">Wellness Offers <span class="pill pill-new">6 new</span></div><div class="hi-s">Merchant-funded credits from premium wellness partners</div></div>
+          <div class="hi-main"><div class="hi-t">Wellness Offers <span class="pill pill-new">8 new</span></div><div class="hi-s">Merchant-funded offers, paid as CC points, from premium partners</div></div>
           <div class="chev">›</div>
         </div>
         <div class="divider"></div>
@@ -622,11 +622,11 @@
 
       <div class="sechead">Accelerated spend this year · ₹92,155</div>
       <div class="card brk" style="margin-top:0">
-        <div class="br"><div class="bic">G</div><div class="bm"><div class="bt">Gym & studio memberships</div><div class="bs">Cult.fit, Ultimate Performance</div></div><div class="bv">₹41,250</div></div>
+        <div class="br"><div class="bic">G</div><div class="bm"><div class="bt">Gym & studio memberships</div><div class="bs">Fitness First, Ozone</div></div><div class="bv">₹41,250</div></div>
         <div class="divider"></div>
-        <div class="br"><div class="bic">E</div><div class="bm"><div class="bt">Equipment, tech & recovery</div><div class="bs">Technogym, Oura, Therabody</div></div><div class="bv">₹25,905</div></div>
+        <div class="br"><div class="bic">E</div><div class="bm"><div class="bt">Equipment, tech & recovery</div><div class="bs">Apple, Garmin, Hyperice</div></div><div class="bv">₹25,905</div></div>
         <div class="divider"></div>
-        <div class="br"><div class="bic">S</div><div class="bm"><div class="bt">Supplements & spa</div><div class="bs">Fast&amp;Up, Four Fountains · low-ticket</div></div><div class="bv">₹25,000</div></div>
+        <div class="br"><div class="bic">S</div><div class="bm"><div class="bt">Supplements & nutrition</div><div class="bs">Optimum Nutrition, HealthKart · low-ticket</div></div><div class="bv">₹25,000</div></div>
       </div>
       <div class="footnote">3× on high-ticket wellbeing (₹10,000+ per transaction) up to ₹2,00,000 a year. Low-ticket purchases (under ₹10,000) earn 3× on the first ₹25,000 a year, then base rate. Asymmetric by design — like fuel and utilities, everyday spend is capped; premium spend is not.</div>
     </section>
@@ -634,37 +634,47 @@
     <!-- ============ OFFERS ============ -->
     <section class="screen detail" id="offers">
       <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Wellness Offers</span></div>
-      <div class="footnote" style="padding-top:12px;padding-bottom:0">Add an offer once — the credit posts automatically after you spend. Offers are funded by the partner, at no cost to your benefit budget.</div>
+      <div class="footnote" style="padding-top:12px;padding-bottom:0">Add an offer once — the CC points post automatically after you spend. Offers are funded by the partner, at no cost to your benefit budget.</div>
 
-      <div class="card offer" onclick="openOffer('therabody')">
-        <div class="oimg" style="background:linear-gradient(135deg,#2d3446,#4a5568)">Therabody</div>
-        <div class="obody"><div class="ot">Get 20% back, up to ₹3,000</div><div class="os">On Theragun & recovery devices · expires 30 Sep</div>
-          <div id="badge-therabody" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('fitnessfirst')">
+        <div class="oimg" style="background:linear-gradient(135deg,#1c2b45,#2d4468)">Fitness First</div>
+        <div class="obody"><div class="ot">Earn ₹12,000 in CC points on annual membership</div><div class="os">Gym &amp; studio membership · expires 30 Sep</div>
+          <div id="badge-fitnessfirst" class="addlink">+ Add to Card</div></div>
       </div>
-      <div class="card offer" onclick="openOffer('oura')">
-        <div class="oimg" style="background:linear-gradient(135deg,#0c6a60,#128a7d)">Oura</div>
-        <div class="obody"><div class="ot">₹2,000 back on membership + ring</div><div class="os">Sleep & readiness tracking · expires 15 Oct</div>
-          <div id="badge-oura" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('ozone')">
+        <div class="oimg" style="background:linear-gradient(135deg,#0c6a60,#128a7d)">Ozone</div>
+        <div class="obody"><div class="ot">Earn ₹6,000 in CC points on a 6-month membership</div><div class="os">Gym &amp; wellness club · expires 15 Oct</div>
+          <div id="badge-ozone" class="addlink">+ Add to Card</div></div>
       </div>
-      <div class="card offer" onclick="openOffer('fastup')">
-        <div class="oimg" style="background:linear-gradient(135deg,#0a3f6e,#0f5aa0)">Fast&amp;Up</div>
-        <div class="obody"><div class="ot">Spend ₹4,000, get ₹800 back</div><div class="os">Nutrition & supplements · expires 30 Sep</div>
-          <div id="badge-fastup" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('apple')">
+        <div class="oimg" style="background:linear-gradient(135deg,#2b2b2e,#4a4a4f)">Apple</div>
+        <div class="obody"><div class="ot">Earn ₹6,000 in CC points on Apple Watch Ultra</div><div class="os">Wearables &amp; health tech · expires 31 Oct</div>
+          <div id="badge-apple" class="addlink">+ Add to Card</div></div>
       </div>
-      <div class="card offer" onclick="openOffer('fourfountains')">
-        <div class="oimg" style="background:linear-gradient(135deg,#6b4a8c,#4a2f66)">Four Fountains Spa</div>
-        <div class="obody"><div class="ot">₹1,000 back on ₹5,000</div><div class="os">De-stress spa therapies · expires 20 Oct</div>
-          <div id="badge-fourfountains" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('garmin')">
+        <div class="oimg" style="background:linear-gradient(135deg,#0a3f6e,#0f5aa0)">Garmin</div>
+        <div class="obody"><div class="ot">Earn ₹5,000 in CC points on Fenix &amp; Forerunner</div><div class="os">Wearables · expires 31 Oct</div>
+          <div id="badge-garmin" class="addlink">+ Add to Card</div></div>
       </div>
-      <div class="card offer" onclick="openOffer('kama')">
-        <div class="oimg" style="background:linear-gradient(135deg,#3f5a3a,#5c7a52)">Kama Ayurveda</div>
-        <div class="obody"><div class="ot">Get 15% back, up to ₹2,500</div><div class="os">Ayurvedic wellness & grooming · expires 12 Oct</div>
-          <div id="badge-kama" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('hyperice')">
+        <div class="oimg" style="background:linear-gradient(135deg,#2d3446,#4a5568)">Hyperice</div>
+        <div class="obody"><div class="ot">Earn 15% in CC points, up to ₹4,000</div><div class="os">Recovery devices · expires 20 Oct</div>
+          <div id="badge-hyperice" class="addlink">+ Add to Card</div></div>
       </div>
-      <div class="card offer" onclick="openOffer('sleepco')">
-        <div class="oimg" style="background:linear-gradient(135deg,#7a3b3b,#a85454)">The Sleep Company</div>
-        <div class="obody"><div class="ot">₹3,000 back on mattresses</div><div class="os">Sleep & recovery · expires 05 Nov</div>
-          <div id="badge-sleepco" class="addlink">+ Add to Card</div></div>
+      <div class="card offer" onclick="openOffer('optimum')">
+        <div class="oimg" style="background:linear-gradient(135deg,#2a2a2a,#5a4a1e)">Optimum Nutrition</div>
+        <div class="obody"><div class="ot">Spend ₹5,000, earn ₹1,000 in CC points</div><div class="os">Protein &amp; nutrition · expires 30 Sep</div>
+          <div id="badge-optimum" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('healthkart')">
+        <div class="oimg" style="background:linear-gradient(135deg,#2f6b3a,#4a8a52)">HealthKart</div>
+        <div class="obody"><div class="ot">Earn 20% in CC points, up to ₹1,500</div><div class="os">Supplements &amp; nutrition · expires 05 Nov</div>
+          <div id="badge-healthkart" class="addlink">+ Add to Card</div></div>
+      </div>
+      <div class="card offer" onclick="openOffer('kurlon')">
+        <div class="oimg" style="background:linear-gradient(135deg,#6b4a8c,#4a2f66)">Kurlon</div>
+        <div class="obody"><div class="ot">Earn ₹5,000 in CC points on luxury mattresses</div><div class="os">Sleep &amp; recovery · expires 05 Nov</div>
+          <div id="badge-kurlon" class="addlink">+ Add to Card</div></div>
       </div>
       <div class="spacer-lg"></div>
     </section>
@@ -673,14 +683,14 @@
     <section class="screen detail" id="offer-detail">
       <div class="backbar"><button onclick="back()">‹ Back</button><span class="bt-title">Offer</span></div>
       <div class="dhero" id="od-hero" style="background:linear-gradient(135deg,#2d3446,#4a5568)">
-        <div><div class="dh-t" id="od-brand">Therabody</div><div class="dh-loc" id="od-cat">Recovery devices</div></div>
+        <div><div class="dh-t" id="od-brand">Fitness First</div><div class="dh-loc" id="od-cat">Gym & studio membership</div></div>
       </div>
       <div class="card infoblock" style="margin-top:16px">
-        <div class="ib-row"><div class="ib-ic b">%</div><div class="ib-m"><div class="ib-t" id="od-offer">Get 20% back, up to ₹3,000</div><div class="ib-s">Statement credit posts automatically within 5 days of a qualifying purchase.</div></div></div>
-        <div class="ib-row"><div class="ib-ic g">3×</div><div class="ib-m"><div class="ib-t">Plus 3× CC points</div><div class="ib-s">Eligible spend also counts toward your ₹1,50,000 accelerator.</div></div></div>
+        <div class="ib-row"><div class="ib-ic b">%</div><div class="ib-m"><div class="ib-t" id="od-offer">Earn ₹12,000 in CC points on annual membership</div><div class="ib-s">CC points post to your account within 5 days of a qualifying purchase.</div></div></div>
+        <div class="ib-row"><div class="ib-ic g">3×</div><div class="ib-m"><div class="ib-t">Plus 3× CC points</div><div class="ib-s">Eligible spend also earns 3× toward your wellbeing accelerator.</div></div></div>
       </div>
       <button class="cta" id="od-addbtn" onclick="addOffer()">+ Add to Card</button>
-      <div class="footnote">One tap enrols the offer to your Premier Card. No coupon code, nothing to show at checkout — pay with Premier and the credit is applied for you.</div>
+      <div class="footnote">One tap enrols the offer to your Premier Card. No coupon code, nothing to show at checkout — pay with Premier and the CC points are added for you.</div>
     </section>
 
     <!-- ============ TRAVEL LIST ============ -->
@@ -809,7 +819,7 @@
       <div class="sechead">Where the value came from</div>
       <div class="valtable" style="margin-top:0">
         <div class="vt"><div class="vt-l">Accelerated CC points<small>3× wellness · 5× wellness travel</small></div><div class="vt-v">₹2,259</div></div>
-        <div class="vt"><div class="vt-l">Wellness offers claimed<small>Merchant-funded credits</small></div><div class="vt-v">₹4,929</div></div>
+        <div class="vt"><div class="vt-l">Wellness offers claimed<small>Merchant-funded, paid as CC points</small></div><div class="vt-v">₹4,929</div></div>
         <div class="vt"><div class="vt-l">Purchase protection & warranty<small>Cover you'd otherwise buy separately</small></div><div class="vt-v">₹2,044</div></div>
         <div class="vt"><div class="vt-l">Concierge escalations<small>Time handed back to you</small></div><div class="vt-v">₹500</div></div>
         <div class="vt"><div class="vt-l">Property credit used<small>On your retreat stay</small></div><div class="vt-v">₹1,500</div></div>
@@ -881,12 +891,14 @@
 
   // ---- offers ----
   var OFFERS = {
-    therabody:{brand:'Therabody', cat:'Recovery devices', offer:'Get 20% back, up to ₹3,000', grad:'linear-gradient(135deg,#2d3446,#4a5568)'},
-    oura:{brand:'Oura', cat:'Sleep & readiness', offer:'₹2,000 back on membership + ring', grad:'linear-gradient(135deg,#0c6a60,#128a7d)'},
-    fastup:{brand:'Fast&Up', cat:'Nutrition & supplements', offer:'Spend ₹4,000, get ₹800 back', grad:'linear-gradient(135deg,#0a3f6e,#0f5aa0)'},
-    fourfountains:{brand:'Four Fountains Spa', cat:'De-stress therapies', offer:'₹1,000 back on ₹5,000', grad:'linear-gradient(135deg,#6b4a8c,#4a2f66)'},
-    kama:{brand:'Kama Ayurveda', cat:'Wellness & grooming', offer:'Get 15% back, up to ₹2,500', grad:'linear-gradient(135deg,#3f5a3a,#5c7a52)'},
-    sleepco:{brand:'The Sleep Company', cat:'Sleep & recovery', offer:'₹3,000 back on mattresses', grad:'linear-gradient(135deg,#7a3b3b,#a85454)'}
+    fitnessfirst:{brand:'Fitness First', cat:'Gym & studio membership', offer:'Earn ₹12,000 in CC points on annual membership', grad:'linear-gradient(135deg,#1c2b45,#2d4468)'},
+    ozone:{brand:'Ozone', cat:'Gym & wellness club', offer:'Earn ₹6,000 in CC points on a 6-month membership', grad:'linear-gradient(135deg,#0c6a60,#128a7d)'},
+    apple:{brand:'Apple', cat:'Wearables & health tech', offer:'Earn ₹6,000 in CC points on Apple Watch Ultra', grad:'linear-gradient(135deg,#2b2b2e,#4a4a4f)'},
+    garmin:{brand:'Garmin', cat:'Wearables', offer:'Earn ₹5,000 in CC points on Fenix & Forerunner', grad:'linear-gradient(135deg,#0a3f6e,#0f5aa0)'},
+    hyperice:{brand:'Hyperice', cat:'Recovery devices', offer:'Earn 15% in CC points, up to ₹4,000', grad:'linear-gradient(135deg,#2d3446,#4a5568)'},
+    optimum:{brand:'Optimum Nutrition', cat:'Protein & nutrition', offer:'Spend ₹5,000, earn ₹1,000 in CC points', grad:'linear-gradient(135deg,#2a2a2a,#5a4a1e)'},
+    healthkart:{brand:'HealthKart', cat:'Supplements & nutrition', offer:'Earn 20% in CC points, up to ₹1,500', grad:'linear-gradient(135deg,#2f6b3a,#4a8a52)'},
+    kurlon:{brand:'Kurlon', cat:'Sleep & recovery', offer:'Earn ₹5,000 in CC points on luxury mattresses', grad:'linear-gradient(135deg,#6b4a8c,#4a2f66)'}
   };
   var added = {};
   var activeOffer = null;
@@ -911,7 +923,7 @@
     btn.textContent = '✓ Added to Card'; btn.style.background='var(--green)';
     // update list badge
     var lb = document.getElementById('badge-'+activeOffer);
-    if(lb){ lb.className='added'; lb.textContent='✓ Added · credit posts automatically'; }
+    if(lb){ lb.className='added'; lb.textContent='✓ Added · CC points post automatically'; }
     showToast('Added to your Premier Card');
   }
 
